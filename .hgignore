@@ -1,0 +1,15 @@
+syntax: regexp
+~$
+build\.properties$
+buildnumber\.properties$
+bin/
+data/
+Logs/
+\.settings/
+\.jar$
+\.zip$
+\.class$
+\.pyc$
+\.project$
+\.classpath$
+\.pydevproject$
