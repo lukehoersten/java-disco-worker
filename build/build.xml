@@ -1,0 +1,166 @@
+<!--
+        author: Luke Hoersten <lhoersten@allstontrading.com>
+-->
+<project name="java-disco-worker" basedir="." default="all">
+        <property file="build.properties" />
+        <property file="lib.properties" />
+        <property file="buildnumber.properties" />
+
+        <!-- Src -->
+        <property name="src.path" value="src/**/*.java" />
+        <property name="test.path" value="test/**/*.java" />
+        <property name="test.resources" value="test/**/*.xls,*/test/**/*.csv" />
+
+        <!-- Bin Dirs -->
+        <property name="bin.dir" location="bin" />
+        <property name="class.dir" location="${bin.dir}/classes" />
+        <property name="lib.dir" location="lib" />
+
+        <!-- Test Bin Dirs -->
+        <property name="test.class.dir" location="${bin.dir}/test/classes" />
+        <property name="test.lib.dir" location="testlib" />
+
+        <!-- Clean -->
+        <target name="clean" description="Delete bin directory with class bytecode and jar files.">
+                <delete failonerror="false" dir="${bin.dir}" />
+        </target>
+
+        <!--Clean All -->
+        <target name="clean.all" description="Runs clean and clean.jars." depends="clean" />
+
+        <!-- Libs -->
+        <target name="libs">
+                <!-- Dependencies -->
+                <fileset dir="${lib.dir}" id="lib.jars">
+                        <include name="${json.jar}" />
+                </fileset>
+
+                <!-- Test Dependencies -->
+                <fileset dir="${test.lib.dir}" id="test.lib.jars">
+                        <include name="${junit.jar}" />
+                        <include name="${mockito.jar}" />
+                </fileset>
+        </target>
+
+        <!-- Compile -->
+        <target name="compile" description="Compile java source files to class bytecode." depends="clean, libs">
+                <mkdir dir="${class.dir}" />
+                <javac srcdir=".." includes="${src.path}" destdir="${class.dir}" includeantruntime="no" debug="true">
+                        <classpath>
+                                <fileset refid="lib.jars" />
+                        </classpath>
+                        <compilerarg value="-Xlint:unchecked" />
+                        <compilerarg value="-Xlint:deprecation" />
+                </javac>
+        </target>
+
+        <!-- Compile Tests -->
+        <target name="test.compile" depends="compile">
+                <mkdir dir="${test.class.dir}" />
+                <javac srcdir=".." includes="${test.path}" destdir="${test.class.dir}" includeantruntime="no" debug="true">
+                        <classpath>
+                                <pathelement path="${class.dir}" />
+                                <fileset refid="lib.jars" />
+                                <fileset refid="test.lib.jars" />
+                        </classpath>
+                        <compilerarg value="-Xlint:unchecked" />
+                        <compilerarg value="-Xlint:deprecation" />
+                </javac>
+        </target>
+
+        <!-- Run Tests -->
+        <target name="test" description="Run unit tests." depends="test.compile">
+                <!-- copy resources needed to run the unit tests -->
+                <copy todir="${test.class.dir}" verbose="true">
+                        <fileset dir=".." includes="${test.resources}"/>
+                        <regexpmapper from="^.*/test/(.*)$$" to="\1" handledirsep="yes"/>
+                </copy>
+
+                <junit haltonfailure="true" fork="true" forkmode="once">
+                        <jvmarg value="-ea" />
+                        <jvmarg value="-Xmx512m" />
+                        <jvmarg value="-Xms512m" />
+                        <jvmarg value="-XX:+UseConcMarkSweepGC" />
+                        <jvmarg value="-XX:+CMSParallelRemarkEnabled" />
+
+                        <classpath>
+                                <pathelement path="${class.dir}" />
+                                <pathelement path="${test.class.dir}" />
+                                <pathelement path="${test.resources}" />
+                                <fileset refid="lib.jars" />
+                                <fileset refid="test.lib.jars" />
+                        </classpath>
+
+                        <formatter type="brief" usefile="false" />
+                        <batchtest>
+                                <fileset dir="${test.class.dir}">
+                                        <include name="**/Test*.class" />
+                                        <include name="**/*Test.class" />
+                                        <exclude name="**/*$*.class" />
+                                        <exclude name="**/Abstract*.class" />
+                                </fileset>
+                        </batchtest>
+                </junit>
+        </target>
+
+        <!-- Build Number -->
+        <target name="get.build.number" unless="build.number">
+                <property name="build.number" value="0" />
+        </target>
+
+        <!-- Version -->
+        <target name="version" depends="libs, get.build.number">
+                <tstamp>
+                        <format property="build.date" pattern="yyyy MMM dd HH:mm:ss.SSS" />
+                </tstamp>
+
+                <exec executable="hg" dir="." outputproperty="build.revisionid" failonerror="true">
+                        <arg value="identify" />
+                        <arg value="--config" />
+                        <arg value="defaults.identify=-it" />
+                </exec>
+
+                <echo message="Version: build number: ${build.number}; mercurial id: ${build.revisionid}; build date: ${build.date};" />
+        </target>
+
+        <!-- Package -->
+        <target name="package" description="Package the compiled classes into a jar." depends="version">
+                <property name="export.name" value="${ant.project.name}-${build.number}" />
+                <property name="export.jar" value="${export.name}.jar" />
+                <property name="export.jar.path" value="${bin.dir}/${export.jar}" />
+
+                <unjar dest="${class.dir}" overwrite="false">
+                        <fileset refid="lib.jars" />
+                </unjar>
+
+                <!-- Include src -->
+                <copy todir="${class.dir}">
+                        <fileset dir=".." includes="${src.path}" />
+                        <regexpmapper from="^src/(.*)$$" to="\1" />
+                </copy>
+
+                <jar destfile="${export.jar.path}" basedir="${class.dir}" compress="false">
+                        <manifest>
+                                <attribute name="Main-Class" value="${version.class}" />
+                                <attribute name="Build-Number" value="${build.number}" />
+                                <attribute name="Date" value="${build.date}" />
+                                <attribute name="Revision-ID" value="${build.revisionid}" />
+                        </manifest>
+                </jar>
+        </target>
+
+        <!-- Release -->
+        <target name="release" description="Release the jar file by copying it to the releases directory." depends="package">
+                <property name="release.zip" value="${export.name}.zip" />
+                <property name="release.zip.path" value="${release.dir}/${release.zip}" />
+
+                <zip destfile="${release.zip.path}" includes="${export.jar}" basedir="${bin.dir}" compress="true" />
+                <symlink resource="${release.zip}" link="${release.dir}/${ant.project.name}-LATEST.zip" overwrite="true" />
+
+                <echo message="Released ${release.zip.path}" />
+
+                <buildnumber file="buildnumber.properties" />
+        </target>
+
+        <target name="all" description="Compile and package jar." depends="compile, package" />
+</project>
