@@ -10,7 +10,14 @@ jar*.
 *NOTE:* This project is still very beta and in active development. I'm
 operating under the "release early, release often" principle.
 
-To-do List
+Dependencies
+------------
+
+* [JSON-Java](https://github.com/douglascrockford/JSON-java) -
+  Unfortunately no Jar is produced for this dependency so I may end up
+  including one in the BitBucket downloads second.
+
+To-Do List
 ----------
 
 ### Generic
