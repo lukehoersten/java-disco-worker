@@ -6,8 +6,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
-import com.allstontrading.disco.lib.DiscoMapFunction;
-import com.allstontrading.disco.lib.job.DiscoJob;
+import com.allstontrading.disco.DiscoMapFunction;
 
 /**
  * Run like: "java -cp job.jar com.allstontrading.disco.job.ExampleDiscoJob example_input_file"
