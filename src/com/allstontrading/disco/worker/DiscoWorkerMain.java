@@ -6,10 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.channels.Channels;
 import java.util.Arrays;
 import java.util.List;
 
 import com.allstontrading.disco.DiscoMapFunction;
+import com.allstontrading.disco.DiscoUtils;
 
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>
@@ -21,7 +23,7 @@ public class DiscoWorkerMain {
 	private static final String STDERR_LOG = "stderr.log";
 
 	public static void main(final String[] args) throws IOException {
-		final DiscoWorker discoWorker = new DiscoWorker(System.in, System.err);
+		final DiscoWorker discoWorker = new DiscoWorker(Channels.newChannel(System.in), Channels.newChannel(System.err));
 		redirectStdIOToFile();
 
 		final String functionName = args[0];

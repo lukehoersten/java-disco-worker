@@ -2,10 +2,11 @@ package com.allstontrading.disco.worker.task;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,19 +26,19 @@ public class DiscoTaskInputFetcher {
 	private final InputErrorEncoder inputErrorEncoder;
 
 	private final DiscoIOChannel discoIOChannel;
-	private final List<InputStream> inputs;
+	private final List<ReadableByteChannel> inputs;
 	private final int discoPort;
 
 	public DiscoTaskInputFetcher(final DiscoIOChannel discoIOChannel, final int discoPort) {
 		this.discoIOChannel = discoIOChannel;
-		this.inputs = new LinkedList<InputStream>();
+		this.inputs = new LinkedList<ReadableByteChannel>();
 		this.discoPort = discoPort;
 
 		this.requestInputEncoder = new RequestInputsEncoder();
 		this.inputErrorEncoder = new InputErrorEncoder();
 	}
 
-	public List<InputStream> getInputs() {
+	public List<ReadableByteChannel> getInputs() {
 		if (inputs.isEmpty()) {
 			requestInput();
 		}
@@ -68,7 +69,7 @@ public class DiscoTaskInputFetcher {
 
 	private void requestInput() {
 		try {
-			discoIOChannel.send(requestInputEncoder);
+			discoIOChannel.write(requestInputEncoder);
 		}
 		catch (final IOException e) {
 			throw new RuntimeException(e);
@@ -129,7 +130,7 @@ public class DiscoTaskInputFetcher {
 	 */
 	private void addRawURLInputStream(final DiscoInputReplica replica) {
 		final String dataString = replica.getURI().toString().split(DiscoInputReplicaProtocol.URL_SCHEME)[1];
-		inputs.add(new ByteArrayInputStream(dataString.getBytes()));
+		inputs.add(Channels.newChannel(new ByteArrayInputStream(dataString.getBytes())));
 	}
 
 	/**
@@ -139,7 +140,7 @@ public class DiscoTaskInputFetcher {
 	 */
 	private void addHttpURLInputStream(final DiscoInputReplica replica) {
 		try {
-			inputs.add(replica.getURI().toURL().openStream());
+			inputs.add(Channels.newChannel(replica.getURI().toURL().openStream()));
 		}
 		catch (final IOException e) {
 			throw new RuntimeException(e);
@@ -155,7 +156,7 @@ public class DiscoTaskInputFetcher {
 	private void addDiscoURLInputStream(final DiscoInputReplica replica) {
 		try {
 			final URL discoLocation = insertDiscoPort(replica.getURI());
-			inputs.add(discoLocation.openStream());
+			inputs.add(Channels.newChannel(discoLocation.openStream()));
 		}
 		catch (final IOException e) {
 			throw new RuntimeException(e);
@@ -177,7 +178,7 @@ public class DiscoTaskInputFetcher {
 
 	private void inputError(final String inputId, final List<String> repIds) {
 		try {
-			discoIOChannel.send(inputErrorEncoder.set(inputId, repIds));
+			discoIOChannel.write(inputErrorEncoder.set(inputId, repIds));
 		}
 		catch (final IOException e) {
 			throw new RuntimeException(e);

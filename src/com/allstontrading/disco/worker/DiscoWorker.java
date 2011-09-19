@@ -2,9 +2,9 @@ package com.allstontrading.disco.worker;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.List;
 
 import com.allstontrading.disco.worker.protocol.DiscoIOChannel;
@@ -44,8 +44,8 @@ public class DiscoWorker implements DiscoWorkerListener {
 	private final ErrorEncoder errorEncoder;
 	private final FatalEncoder fatalEncoder;
 
-	public DiscoWorker(final InputStream inputStream, final OutputStream outputStream) {
-		this.discoIOChannel = new DiscoIOChannel(inputStream, outputStream, new DiscoWorkerDecoder().setListener(this));
+	public DiscoWorker(final ReadableByteChannel readChannel, final WritableByteChannel writeChannel) {
+		this.discoIOChannel = new DiscoIOChannel(readChannel, writeChannel, new DiscoWorkerDecoder().setListener(this));
 		this.map = null;
 		this.reduce = null;
 
@@ -59,16 +59,16 @@ public class DiscoWorker implements DiscoWorkerListener {
 
 	public void requestTask() throws IOException {
 		if (!hasTask()) {
-			discoIOChannel.send(workerAnnounceEncoder.set(WORKER_PROTOCOL_VERSION, getPid()));
-			discoIOChannel.send(requestTaskEncoder);
+			discoIOChannel.write(workerAnnounceEncoder.set(WORKER_PROTOCOL_VERSION, getPid()));
+			discoIOChannel.write(requestTaskEncoder);
 		}
 	}
 
-	public InputStream getMapInput() {
+	public ReadableByteChannel getMapInput() {
 		return map.getMapInput();
 	}
 
-	public List<InputStream> getReduceInputs() {
+	public List<ReadableByteChannel> getReduceInputs() {
 		return reduce.getReduceInputs();
 	}
 
@@ -79,19 +79,19 @@ public class DiscoWorker implements DiscoWorkerListener {
 	}
 
 	public void reportOutput(final File outputLocation, final OutputType outputType) throws IOException {
-		discoIOChannel.send(outputEncoder.set(getTask().getWorkingDir(), outputLocation, outputType, ""));
+		discoIOChannel.write(outputEncoder.set(getTask().getWorkingDir(), outputLocation, outputType, ""));
 	}
 
 	public void doneReportingOutput() throws IOException {
-		discoIOChannel.send(doneEncoder);
+		discoIOChannel.write(doneEncoder);
 	}
 
 	public void reportError(final String msg) throws IOException {
-		discoIOChannel.send(errorEncoder.set(msg));
+		discoIOChannel.write(errorEncoder.set(msg));
 	}
 
 	public void reportFatalError(final String msg) throws IOException {
-		discoIOChannel.send(fatalEncoder.set(msg));
+		discoIOChannel.write(fatalEncoder.set(msg));
 	}
 
 	public boolean hasMapTask() {

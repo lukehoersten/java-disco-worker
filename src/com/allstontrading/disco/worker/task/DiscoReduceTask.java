@@ -1,6 +1,6 @@
 package com.allstontrading.disco.worker.task;
 
-import java.io.InputStream;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 import com.allstontrading.disco.worker.protocol.DiscoIOChannel;
@@ -20,7 +20,7 @@ public class DiscoReduceTask extends DiscoTask {
 		return "reduce";
 	}
 
-	public List<InputStream> getReduceInputs() {
+	public List<ReadableByteChannel> getReduceInputs() {
 		return getInputFetcher().getInputs();
 	}
 

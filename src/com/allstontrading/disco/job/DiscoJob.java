@@ -40,7 +40,7 @@ public class DiscoJob {
 		this.reduceFunctionClass = reduceFunctionClass;
 	}
 
-	private static final String RUN_SCRIPT_NAME = "run.sh";
+	private static final String RUN_SCRIPT_NAME = "disco_run_generated.sh";
 
 	public void submit() throws IOException, InterruptedException {
 		final File runScript = new File(RUN_SCRIPT_NAME);
@@ -68,20 +68,23 @@ public class DiscoJob {
 		outputStream.close();
 	}
 
+	private static final String MAP_FLAG = "--has-map ";
+	private static final String REDUCE_FLAG = "--has-reduce ";
+	private static final String PREFIX_FLAG = "--prefix=";
+
 	private String buildJobString() {
 		final StringBuilder sb = new StringBuilder();
 
 		if (mapFunctionClass != null) {
-			sb.append("--has-map ");
+			sb.append(MAP_FLAG);
 		}
 
 		if (reduceFunctionClass != null) {
-			sb.append("--has-reduce ");
+			sb.append(REDUCE_FLAG);
 		}
 
 		if (!jobName.isEmpty()) {
-			sb.append("--prefix=");
-			sb.append(jobName);
+			sb.append(PREFIX_FLAG).append(jobName);
 		}
 
 		return sb.toString();
@@ -93,7 +96,7 @@ public class DiscoJob {
 		scriptFile.setExecutable(true);
 		final FileWriter fileWriter = new FileWriter(scriptFile);
 
-		fileWriter.write(MessageFormat.format(RUN_SCRIPT_FORMAT, getJar().getName(), DiscoWorkerMain.class.getName(),
+		fileWriter.write(MessageFormat.format(RUN_SCRIPT_FORMAT, getJarName(), DiscoWorkerMain.class.getName(),
 		        (mapFunctionClass != null) ? mapFunctionClass.getName() : "none",
 		        (reduceFunctionClass != null) ? reduceFunctionClass.getName() : "none", args));
 		fileWriter.close();
@@ -101,8 +104,12 @@ public class DiscoJob {
 		System.out.println("Generated run script: " + scriptFile.getAbsoluteFile());
 	}
 
-	private static File getJar() {
-		return new File(DiscoJob.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+	private static String getClassPath() {
+		return System.getProperties().getProperty("java.class.path", null);
+	}
+
+	private static String getJarName() {
+		return (new File(DiscoJob.class.getProtectionDomain().getCodeSource().getLocation().getPath())).getName();
 	}
 
 }

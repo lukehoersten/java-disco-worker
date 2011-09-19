@@ -29,14 +29,16 @@ public class DiscoWorkerDecoder {
 		this.listener = null;
 	}
 
+	/**
+	 * @param buffer
+	 * @return <code>true</code> if complete message was read.
+	 */
 	public boolean decode(final ByteBuffer buffer) {
-		final int start = buffer.position();
-
 		if (!headerDecoder.isFullHeader(buffer)) {
-			buffer.position(start);
 			return false;
 		}
 
+		final int start = buffer.position();
 		headerDecoder.parse(buffer);
 		final int payloadLength = headerDecoder.getPayloadLength();
 

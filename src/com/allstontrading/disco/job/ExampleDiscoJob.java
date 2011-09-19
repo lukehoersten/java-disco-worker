@@ -2,7 +2,7 @@ package com.allstontrading.disco.job;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class ExampleDiscoJob implements DiscoMapFunction {
 	}
 
 	@Override
-	public List<File> map(final InputStream parameterSpacePoint, final String[] args) {
+	public List<File> map(final ReadableByteChannel parameterSpacePoint, final String[] args) {
 		final String configTemplateFile = args[0];
 
 		return Collections.singletonList(new File(""));

@@ -1,6 +1,6 @@
 package com.allstontrading.disco.worker.task;
 
-import java.io.InputStream;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 import com.allstontrading.disco.worker.protocol.DiscoIOChannel;
@@ -20,8 +20,8 @@ public class DiscoMapTask extends DiscoTask {
 		return "map";
 	}
 
-	public InputStream getMapInput() {
-		final List<InputStream> inputs = getInputFetcher().getInputs();
+	public ReadableByteChannel getMapInput() {
+		final List<ReadableByteChannel> inputs = getInputFetcher().getInputs();
 		if (inputs.size() != 1) {
 			throw new RuntimeException("Map task can only have one input");
 		}

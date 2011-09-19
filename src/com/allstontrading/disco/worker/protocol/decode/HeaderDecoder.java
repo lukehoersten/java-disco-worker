@@ -38,8 +38,8 @@ public class HeaderDecoder {
 		final byte[] bytes = buffer.array();
 		int spaceCount = 0;
 
-		for (int i = 0; i < bytes.length; i++) {
-			if (bytes[i] == SPACE) {
+		for (int i = 0; i < buffer.remaining(); i++) {
+			if (bytes[i + buffer.position()] == SPACE) {
 				if (++spaceCount == 2) {
 					return i;
 				}

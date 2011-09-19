@@ -1,7 +1,7 @@
 package com.allstontrading.disco;
 
 import java.io.File;
-import java.io.InputStream;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 /**
@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface DiscoMapFunction {
 
-	List<File> map(InputStream input, final String[] args);
+	List<File> map(ReadableByteChannel input, final String[] args);
 
 }

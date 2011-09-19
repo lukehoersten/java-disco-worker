@@ -1,7 +1,7 @@
 package com.allstontrading.disco;
 
 import java.io.File;
-import java.io.InputStream;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 /**
@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface DiscoReduceFunction {
 
-	List<File> reduce(List<InputStream> inputs, final String[] args);
+	List<File> reduce(List<ReadableByteChannel> inputs, final String[] args);
 
 }
