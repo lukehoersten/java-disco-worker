@@ -15,7 +15,7 @@ public class DiscoWorkerRunScript {
 	private static final String RUN_SCRIPT_FORMAT = "#!/bin/bash\njava -cp {0} {1} {2} {3} {4}\n";
 
 	public static void generateRunScript(final File scriptFile, final Class<? extends DiscoMapFunction> mapFunctionClass,
-	        final Class<? extends DiscoReduceFunction> reduceFunctionClass, final String args) throws IOException {
+	        final Class<? extends DiscoReduceFunction> reduceFunctionClass, final String[] args) throws IOException {
 
 		scriptFile.setExecutable(true);
 		final FileWriter fileWriter = new FileWriter(scriptFile);
@@ -24,10 +24,19 @@ public class DiscoWorkerRunScript {
 		final String discoWorkerMain = DiscoWorkerMain.class.getName();
 
 		final String scriptContents = MessageFormat.format(RUN_SCRIPT_FORMAT, classpathRelativeToCwd, discoWorkerMain,
-		        getFunctionName(mapFunctionClass), getFunctionName(reduceFunctionClass), args);
+		        getFunctionName(mapFunctionClass), getFunctionName(reduceFunctionClass), concatWithSpaces(args));
 
 		fileWriter.write(scriptContents);
 		fileWriter.close();
+	}
+
+	private static String concatWithSpaces(final String[] args) {
+		final StringBuilder sb = new StringBuilder();
+		for (final String arg : args) {
+			sb.append(' ');
+			sb.append(arg);
+		}
+		return sb.toString();
 	}
 
 	private static String getFunctionName(final Class<?> function) {

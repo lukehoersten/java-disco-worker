@@ -79,7 +79,7 @@ public class DiscoWorker implements DiscoWorkerListener {
 	}
 
 	public void reportOutput(final File outputLocation, final OutputType outputType) throws IOException {
-		discoIOChannel.write(outputEncoder.set(getTask().getWorkingDir(), outputLocation, outputType, ""));
+		discoIOChannel.write(outputEncoder.set(getWorkingDir(), outputLocation, outputType, ""));
 	}
 
 	public void doneReportingOutput() throws IOException {
@@ -92,6 +92,10 @@ public class DiscoWorker implements DiscoWorkerListener {
 
 	public void reportFatalError(final String msg) throws IOException {
 		discoIOChannel.write(fatalEncoder.set(msg));
+	}
+
+	public File getWorkingDir() {
+		return getTask().getWorkingDir();
 	}
 
 	public boolean hasMapTask() {

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.management.ManagementFactory;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -72,6 +73,10 @@ public class DiscoUtils {
 
 	public static String getPathRelativeTo(final File file, final File relativeTo) {
 		return relativeTo.toURI().relativize(file.toURI()).getPath();
+	}
+
+	public static int getPid() {
+		return Integer.parseInt(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
 	}
 
 	/**

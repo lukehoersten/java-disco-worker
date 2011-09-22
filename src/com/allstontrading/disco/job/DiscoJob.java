@@ -19,9 +19,9 @@ public class DiscoJob {
 
 	private Class<? extends DiscoMapFunction> mapFunctionClass;
 	private Class<? extends DiscoReduceFunction> reduceFunctionClass;
-	private final String args;
+	private final String[] args;
 
-	public DiscoJob(final String jobName, final String[] inputs, final String args) {
+	public DiscoJob(final String jobName, final String[] inputs, final String[] args) {
 		this.jobName = jobName;
 		this.inputs = inputs;
 		this.args = args;

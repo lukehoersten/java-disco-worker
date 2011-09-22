@@ -27,13 +27,15 @@ public class ExampleDiscoJob implements DiscoMapFunction {
 		final String configTemplateFile = args[0];
 
 		final String[] inputs = {};
-		final DiscoJob discoJob = new DiscoJob("Test", inputs, configTemplateFile);
+		final String[] jobArgs = { configTemplateFile };
+
+		final DiscoJob discoJob = new DiscoJob("Test", inputs, jobArgs);
 		discoJob.setMapFunction(ExampleDiscoJob.class);
 		discoJob.submit();
 	}
 
 	@Override
-	public List<File> map(final ReadableByteChannel parameterSpacePoint, final String[] args) {
+	public List<File> map(final ReadableByteChannel parameterSpacePoint, final File workingDir, final String[] args) {
 		final String configTemplateFile = args[0];
 
 		return Collections.singletonList(new File(""));

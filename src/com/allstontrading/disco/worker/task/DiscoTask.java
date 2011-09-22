@@ -15,6 +15,7 @@ import com.allstontrading.disco.worker.protocol.decode.types.DiscoInputReplica;
 public abstract class DiscoTask {
 
 	private static final String WORKING_DIR_NAME_FORMAT = "{0}_{1}_{2}";
+	private static final int HEX = 16;
 
 	private final int taskId;
 	private final File workingDir;
@@ -33,7 +34,7 @@ public abstract class DiscoTask {
 	}
 
 	private String getWorkingDirName() {
-		return MessageFormat.format(WORKING_DIR_NAME_FORMAT, taskId, getTaskTypeName(), System.currentTimeMillis());
+		return MessageFormat.format(WORKING_DIR_NAME_FORMAT, taskId, getTaskTypeName(), Long.toString(System.currentTimeMillis(), HEX));
 	}
 
 	protected abstract String getTaskTypeName();

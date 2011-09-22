@@ -40,16 +40,21 @@ public class DiscoIOChannel {
 	private void read() throws IOException {
 		for (;;) {
 			final int startPosition = readBuffer.position();
-			System.out.println("Trying to read: " + new String(readBuffer.array(), startPosition, readBuffer.remaining()));
 			if (decoder.decode(readBuffer)) {
 				inMsg(new String(readBuffer.array(), startPosition, readBuffer.position() - startPosition));
 				return;
 			}
 
 			readBuffer.compact(); // go to write mode
-			if (readChannel.read(readBuffer) <= 0) {
-				throw new IllegalStateException("Not enough data on channel");
+			final int numBytesRead = readChannel.read(readBuffer);
+
+			if (numBytesRead == 0) {
+				throw new IllegalStateException("Ready zero (0) bytes from channel");
 			}
+			else if (numBytesRead < 0) {
+				throw new IllegalStateException("Ready EOF (-1) from channel");
+			}
+
 			readBuffer.flip(); // go to read mode
 		}
 	}

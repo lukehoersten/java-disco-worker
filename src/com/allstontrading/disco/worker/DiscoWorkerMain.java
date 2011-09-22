@@ -19,8 +19,9 @@ import com.allstontrading.disco.DiscoUtils;
  */
 public class DiscoWorkerMain {
 
-	private static final String STDOUT_LOG = "stdout.log";
-	private static final String STDERR_LOG = "stderr.log";
+	private static final String STDOUT_LOG = "stdout";
+	private static final String STDERR_LOG = "stderr";
+	private static final String LOG = ".log";
 
 	public static void main(final String[] args) throws IOException {
 		final DiscoWorker discoWorker = new DiscoWorker(Channels.newChannel(System.in), Channels.newChannel(System.err));
@@ -35,7 +36,7 @@ public class DiscoWorkerMain {
 
 			if (discoWorker.hasMapTask()) {
 				final DiscoMapFunction mapFunction = DiscoWorkerMain.<DiscoMapFunction> instansiateFunction(functionName);
-				final List<File> outputFiles = mapFunction.map(discoWorker.getMapInput(), slicedArgs);
+				final List<File> outputFiles = mapFunction.map(discoWorker.getMapInput(), discoWorker.getWorkingDir(), slicedArgs);
 				discoWorker.reportOutputs(outputFiles);
 			}
 
@@ -60,8 +61,9 @@ public class DiscoWorkerMain {
 	}
 
 	public static void redirectStdIOToFile() throws FileNotFoundException {
-		System.setErr(new PrintStream(new FileOutputStream(STDERR_LOG)));
-		System.setOut(new PrintStream(new FileOutputStream(STDOUT_LOG)));
+		final String pidString = "_" + DiscoUtils.getPid() + LOG;
+		System.setErr(new PrintStream(new FileOutputStream(STDERR_LOG + pidString)));
+		System.setOut(new PrintStream(new FileOutputStream(STDOUT_LOG + pidString)));
 	}
 
 }
