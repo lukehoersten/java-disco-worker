@@ -39,6 +39,7 @@ public class DiscoWorkerMain {
 				discoWorker.reportOutputs(outputFiles);
 			}
 
+			// TODO: reduce phase is not supported because the dir:// URL scheme is unsupported in the input fetcher.
 			// if (discoWorker.hasReduceTask()) {
 			// final DiscoReduceFunction reduceFunction = DiscoWorkerMain.<DiscoReduceFunction> instansiateFunction(reduceFunctionName);
 			// final List<File> outputFile = reduceFunction.reduce(discoWorker.getReduceInputs(), slicedArgs);

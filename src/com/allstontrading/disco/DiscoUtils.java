@@ -1,5 +1,6 @@
 package com.allstontrading.disco;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -62,6 +63,15 @@ public class DiscoUtils {
 
 	public static String decodeRaw(final ReadableByteChannel channel) throws IOException {
 		return new String(new BASE64Decoder().decodeBuffer(Channels.newInputStream(channel)));
+	}
+
+	public static String getPathRelativeToCwd(final File file) {
+		final File cwd = new File(".");
+		return getPathRelativeTo(file, cwd);
+	}
+
+	public static String getPathRelativeTo(final File file, final File relativeTo) {
+		return relativeTo.toURI().relativize(file.toURI()).getPath();
 	}
 
 	/**

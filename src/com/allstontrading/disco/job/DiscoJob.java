@@ -1,14 +1,12 @@
 package com.allstontrading.disco.job;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 
 import com.allstontrading.disco.DiscoMapFunction;
 import com.allstontrading.disco.DiscoReduceFunction;
-import com.allstontrading.disco.worker.DiscoWorkerMain;
 
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>
@@ -44,7 +42,7 @@ public class DiscoJob {
 
 	public void submit() throws IOException, InterruptedException {
 		final File runScript = new File(RUN_SCRIPT_NAME);
-		generateRunScript(runScript);
+		DiscoWorkerRunScript.generateRunScript(runScript, mapFunctionClass, reduceFunctionClass, args);
 
 		final Process process = runProcess(runScript);
 		sendInputsViaStdinTo(process);
@@ -88,28 +86,6 @@ public class DiscoJob {
 		}
 
 		return sb.toString();
-	}
-
-	private static final String RUN_SCRIPT_FORMAT = "#!/bin/bash\njava -cp {0} {1} {2} {3} {4}\n";
-
-	private void generateRunScript(final File scriptFile) throws IOException {
-		scriptFile.setExecutable(true);
-		final FileWriter fileWriter = new FileWriter(scriptFile);
-
-		fileWriter.write(MessageFormat.format(RUN_SCRIPT_FORMAT, getJarName(), DiscoWorkerMain.class.getName(),
-		        (mapFunctionClass != null) ? mapFunctionClass.getName() : "none",
-		        (reduceFunctionClass != null) ? reduceFunctionClass.getName() : "none", args));
-		fileWriter.close();
-
-		System.out.println("Generated run script: " + scriptFile.getAbsoluteFile());
-	}
-
-	private static String getClassPath() {
-		return System.getProperties().getProperty("java.class.path", null);
-	}
-
-	private static String getJarName() {
-		return (new File(DiscoJob.class.getProtectionDomain().getCodeSource().getLocation().getPath())).getName();
 	}
 
 }
