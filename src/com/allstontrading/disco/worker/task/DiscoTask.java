@@ -1,9 +1,9 @@
 package com.allstontrading.disco.worker.task;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.List;
 
+import com.allstontrading.disco.DiscoUtils;
 import com.allstontrading.disco.worker.protocol.DiscoIOChannel;
 import com.allstontrading.disco.worker.protocol.decode.types.DiscoInput;
 import com.allstontrading.disco.worker.protocol.decode.types.DiscoInputReplica;
@@ -14,7 +14,6 @@ import com.allstontrading.disco.worker.protocol.decode.types.DiscoInputReplica;
  */
 public abstract class DiscoTask {
 
-	private static final String WORKING_DIR_NAME_FORMAT = "{0}_{1}_{2}";
 	private static final int HEX = 16;
 
 	private final int taskId;
@@ -34,7 +33,8 @@ public abstract class DiscoTask {
 	}
 
 	private String getWorkingDirName() {
-		return MessageFormat.format(WORKING_DIR_NAME_FORMAT, taskId, getTaskTypeName(), Long.toString(System.currentTimeMillis(), HEX));
+		final String timehash = Long.toString(System.currentTimeMillis(), HEX);
+		return taskId + "_" + getTaskTypeName() + "_pid" + DiscoUtils.getPid() + "_time" + timehash;
 	}
 
 	protected abstract String getTaskTypeName();

@@ -50,7 +50,7 @@ public class DiscoWorkerMain {
 			discoWorker.doneReportingOutput();
 		}
 		catch (final Exception e) {
-			discoWorker.reportFatalError(DiscoUtils.stacktraceToString(e));
+			discoWorker.reportError(DiscoUtils.stacktraceToString(e));
 		}
 	}
 
@@ -61,7 +61,7 @@ public class DiscoWorkerMain {
 	}
 
 	public static void redirectStdIOToFile() throws FileNotFoundException {
-		final String pidString = "_" + DiscoUtils.getPid() + LOG;
+		final String pidString = "_pid" + DiscoUtils.getPid() + LOG;
 		System.setErr(new PrintStream(new FileOutputStream(STDERR_LOG + pidString)));
 		System.setOut(new PrintStream(new FileOutputStream(STDOUT_LOG + pidString)));
 	}

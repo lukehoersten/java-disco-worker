@@ -2,11 +2,11 @@ package com.allstontrading.disco.worker;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.List;
 
+import com.allstontrading.disco.DiscoUtils;
 import com.allstontrading.disco.worker.protocol.DiscoIOChannel;
 import com.allstontrading.disco.worker.protocol.decode.DiscoWorkerDecoder;
 import com.allstontrading.disco.worker.protocol.decode.DiscoWorkerListener;
@@ -59,7 +59,7 @@ public class DiscoWorker implements DiscoWorkerListener {
 
 	public void requestTask() throws IOException {
 		if (!hasTask()) {
-			discoIOChannel.write(workerAnnounceEncoder.set(WORKER_PROTOCOL_VERSION, getPid()));
+			discoIOChannel.write(workerAnnounceEncoder.set(WORKER_PROTOCOL_VERSION, DiscoUtils.getPid()));
 			discoIOChannel.write(requestTaskEncoder);
 		}
 	}
@@ -146,10 +146,6 @@ public class DiscoWorker implements DiscoWorkerListener {
 	@Override
 	public void pause(final int seconds) {
 		getTask().pause(seconds);
-	}
-
-	private int getPid() {
-		return Integer.parseInt(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
 	}
 
 	private DiscoTask getTask() {

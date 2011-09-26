@@ -14,6 +14,13 @@ import com.allstontrading.disco.DiscoReduceFunction;
  */
 public class DiscoJob {
 
+	private static final String RUN_SCRIPT_NAME = "disco_run_generated.sh";
+	private static final String DISCO_JOB_FORMAT = "disco job {0} {1} -f .";
+
+	private static final String MAP_FLAG = "--has-map ";
+	private static final String REDUCE_FLAG = "--has-reduce ";
+	private static final String PREFIX_FLAG = "--prefix=";
+
 	private final String jobName;
 	private final String[] inputs;
 
@@ -38,8 +45,6 @@ public class DiscoJob {
 		this.reduceFunctionClass = reduceFunctionClass;
 	}
 
-	private static final String RUN_SCRIPT_NAME = "disco_run_generated.sh";
-
 	public void submit() throws IOException, InterruptedException {
 		final File runScript = new File(RUN_SCRIPT_NAME);
 		DiscoWorkerRunScript.generateRunScript(runScript, mapFunctionClass, reduceFunctionClass, args);
@@ -49,11 +54,8 @@ public class DiscoJob {
 		process.waitFor();
 	}
 
-	private static final String DISCO_JOB_FORMAT = "disco job {0} {1} -f .";
-
 	private Process runProcess(final File runScript) throws IOException {
 		final String execLine = MessageFormat.format(DISCO_JOB_FORMAT, buildJobString(), runScript.getName());
-		System.out.println("Running exec line: \"" + execLine + "\"...");
 		return Runtime.getRuntime().exec(execLine);
 	}
 
@@ -66,25 +68,17 @@ public class DiscoJob {
 		outputStream.close();
 	}
 
-	private static final String MAP_FLAG = "--has-map ";
-	private static final String REDUCE_FLAG = "--has-reduce ";
-	private static final String PREFIX_FLAG = "--prefix=";
-
 	private String buildJobString() {
 		final StringBuilder sb = new StringBuilder();
-
 		if (mapFunctionClass != null) {
 			sb.append(MAP_FLAG);
 		}
-
 		if (reduceFunctionClass != null) {
 			sb.append(REDUCE_FLAG);
 		}
-
 		if (!jobName.isEmpty()) {
 			sb.append(PREFIX_FLAG).append(jobName);
 		}
-
 		return sb.toString();
 	}
 
