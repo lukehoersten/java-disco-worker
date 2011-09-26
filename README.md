@@ -57,25 +57,26 @@ yourMainClass`. The VM args and Classpath will be passed on to the
 worker as well.
 
 
-Build Dependencies
-------------
+Hacking
+-------
 
-### Runtime
+### Build Dependencies
+
+#### Runtime
 
 * [JSON-Java](https://github.com/douglascrockford/JSON-java) -
   Unfortunately no Jar is produced for this dependency so I may end up
   including one in the BitBucket downloads second.
 
-### Test
+#### Test
 
 * [Mockito](http://code.google.com/p/mockito/) Test framework.
 * [JUnit](http://www.junit.org/)
 
 
-To-Do List
-----------
+### To-Do List
 
-### Generic
+#### Generic
 
 * Reduce phase doesn't correctly handle the `dir://` input scheme.
 * Outputs aren't correctly reported as relative to the jobhome.
@@ -83,7 +84,7 @@ To-Do List
   implementation is incomplete. Currently the CLI `disco job` command
   is used to submit jobs.
 
-### DiscoTaskInputFetcher
+#### DiscoTaskInputFetcher
 
 * Doesn't support including and excluding based on inputs
   which have already been downloaded
@@ -93,3 +94,10 @@ To-Do List
   [filesystem optimization](http://discoproject.org/doc/howto/worker.html#input)
   instead of HTTP access when input files are already locally
   available.
+
+### Repositories & Issues
+
+* [Git Mirror](https://github.com/LukeHoersten/java-disco-worker/)
+* [Mercurial Mirror](http://code.dirigible.co/java-disco-worker/)
+
+Please submit bugs to the [GitHub Issue Tracker](https://github.com/LukeHoersten/java-disco-worker/issues/)
