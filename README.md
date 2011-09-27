@@ -26,6 +26,9 @@ Disco. The second step is the actual "map" function which runs for
 each input. The third step is the reduce which takes the results of
 all the map functions and combines them if needed.
 
+*The disco command line tool must be installed on the box used to
+ submit the job.*
+
 ### Implementing
 
 1. Define the map and reduce phases by implementing the

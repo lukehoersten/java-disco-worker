@@ -45,13 +45,19 @@ public class DiscoJob {
 		this.reduceFunctionClass = reduceFunctionClass;
 	}
 
-	public void submit() throws IOException, InterruptedException {
+	public void submit() throws InterruptedException, IOException {
 		final File runScript = new File(RUN_SCRIPT_NAME);
 		DiscoWorkerRunScript.generateRunScript(runScript, mapFunctionClass, reduceFunctionClass, args);
 
-		final Process process = runProcess(runScript);
-		sendInputsViaStdinTo(process);
-		process.waitFor();
+		try {
+			final Process process = runProcess(runScript);
+			sendInputsViaStdinTo(process);
+			process.waitFor();
+		}
+		catch (final IOException e) {
+			System.err.println("Failed to run 'disco job' CLI tool. Ensure the disco CLI tool is installed.");
+			System.exit(1);
+		}
 	}
 
 	private Process runProcess(final File runScript) throws IOException {

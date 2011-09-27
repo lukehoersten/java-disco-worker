@@ -35,9 +35,12 @@ public class ExampleDiscoJob implements DiscoMapFunction {
 	}
 
 	@Override
-	public List<File> map(final ReadableByteChannel parameterSpacePoint, final File workingDir, final String[] args) {
+	public List<File> map(final ReadableByteChannel input, final File workingDir, final String[] args) {
 		final String configTemplateFile = args[0];
 
+		// Run task with input
+
+		// Return results
 		return Collections.singletonList(new File(""));
 	}
 
