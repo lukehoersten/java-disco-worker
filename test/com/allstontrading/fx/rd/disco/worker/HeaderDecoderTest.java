@@ -4,10 +4,10 @@ import static org.junit.Assert.*;
 
 import java.nio.ByteBuffer;
 
+import org.discoproject.worker.protocol.decoder.HeaderDecoder;
+import org.discoproject.worker.protocol.decoder.types.ResponseMessageName;
 import org.junit.Test;
 
-import com.allstontrading.disco.worker.protocol.decode.HeaderDecoder;
-import com.allstontrading.disco.worker.protocol.decode.types.ResponseMessageName;
 
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>

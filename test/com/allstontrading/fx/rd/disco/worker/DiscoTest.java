@@ -11,21 +11,21 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.List;
 
+import org.discoproject.DiscoUtils;
+import org.discoproject.worker.DiscoWorker;
+import org.discoproject.worker.protocol.DiscoIOChannel;
+import org.discoproject.worker.protocol.decoder.DiscoWorkerDecoder;
+import org.discoproject.worker.protocol.decoder.DiscoWorkerListener;
+import org.discoproject.worker.protocol.decoder.HeaderDecoder;
+import org.discoproject.worker.protocol.decoder.InputDecoder;
+import org.discoproject.worker.protocol.decoder.types.DiscoInput;
+import org.discoproject.worker.protocol.decoder.types.DiscoInputReplica;
+import org.discoproject.worker.protocol.decoder.types.DiscoInputReplicaProtocol;
+import org.discoproject.worker.protocol.decoder.types.DiscoInputStatus;
+import org.discoproject.worker.protocol.encoder.WorkerAnnounceEncoder;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import com.allstontrading.disco.DiscoUtils;
-import com.allstontrading.disco.worker.DiscoWorker;
-import com.allstontrading.disco.worker.protocol.DiscoIOChannel;
-import com.allstontrading.disco.worker.protocol.decode.DiscoWorkerDecoder;
-import com.allstontrading.disco.worker.protocol.decode.DiscoWorkerListener;
-import com.allstontrading.disco.worker.protocol.decode.HeaderDecoder;
-import com.allstontrading.disco.worker.protocol.decode.InputDecoder;
-import com.allstontrading.disco.worker.protocol.decode.types.DiscoInput;
-import com.allstontrading.disco.worker.protocol.decode.types.DiscoInputReplica;
-import com.allstontrading.disco.worker.protocol.decode.types.DiscoInputReplicaProtocol;
-import com.allstontrading.disco.worker.protocol.decode.types.DiscoInputStatus;
-import com.allstontrading.disco.worker.protocol.encode.WorkerAnnounceEncoder;
 
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>

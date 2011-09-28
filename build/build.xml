@@ -25,9 +25,6 @@
 		<delete failonerror="false" dir="${bin.dir}" />
 	</target>
 
-	<!--Clean All -->
-	<target name="clean.all" description="Runs clean and clean.jars." depends="clean" />
-
 	<!-- Libs -->
 	<target name="libs">
 		<!-- Dependencies -->
@@ -141,7 +138,6 @@
 
 		<jar destfile="${export.jar.path}" basedir="${class.dir}" compress="false">
 			<manifest>
-				<attribute name="Main-Class" value="${version.class}" />
 				<attribute name="Build-Number" value="${build.number}" />
 				<attribute name="Date" value="${build.date}" />
 				<attribute name="Revision-ID" value="${build.revisionid}" />
