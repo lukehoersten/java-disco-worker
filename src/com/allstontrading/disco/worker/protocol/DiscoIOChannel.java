@@ -32,16 +32,13 @@ public class DiscoIOChannel {
 
 	public void write(final Object msg) throws IOException {
 		final String msgStr = msg.toString();
-		outMsg(msgStr);
 		writeChannel.write(ByteBuffer.wrap(msgStr.getBytes()));
 		read();
 	}
 
 	private void read() throws IOException {
 		for (;;) {
-			final int startPosition = readBuffer.position();
 			if (decoder.decode(readBuffer)) {
-				inMsg(new String(readBuffer.array(), startPosition, readBuffer.position() - startPosition));
 				return;
 			}
 
@@ -55,16 +52,8 @@ public class DiscoIOChannel {
 				throw new IllegalStateException("Ready EOF (-1) from channel");
 			}
 
-			readBuffer.flip(); // go to read mode
+			readBuffer.flip();
 		}
-	}
-
-	private void outMsg(final String msg) {
-		System.out.println("Disco OUT: " + msg);
-	}
-
-	private void inMsg(final String msg) {
-		System.out.println("Disco IN: " + msg);
 	}
 
 }

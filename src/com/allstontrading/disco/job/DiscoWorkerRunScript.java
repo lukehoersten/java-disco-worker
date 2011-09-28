@@ -73,7 +73,7 @@ public class DiscoWorkerRunScript {
 		final String[] classpaths = getClassPath().split(COLON);
 		for (int i = 0; i < classpaths.length; i++) {
 			if (i != 0) {
-				sb.append(':');
+				sb.append(COLON);
 			}
 			sb.append(DiscoUtils.getPathRelativeToCwd(new File(classpaths[i])));
 		}

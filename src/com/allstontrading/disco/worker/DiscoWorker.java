@@ -16,6 +16,7 @@ import com.allstontrading.disco.worker.protocol.decode.types.DiscoTaskMode;
 import com.allstontrading.disco.worker.protocol.encode.DoneEncoder;
 import com.allstontrading.disco.worker.protocol.encode.ErrorEncoder;
 import com.allstontrading.disco.worker.protocol.encode.FatalEncoder;
+import com.allstontrading.disco.worker.protocol.encode.MessageEncoder;
 import com.allstontrading.disco.worker.protocol.encode.OutputEncoder;
 import com.allstontrading.disco.worker.protocol.encode.RequestTaskEncoder;
 import com.allstontrading.disco.worker.protocol.encode.WorkerAnnounceEncoder;
@@ -44,6 +45,8 @@ public class DiscoWorker implements DiscoWorkerListener {
 	private final ErrorEncoder errorEncoder;
 	private final FatalEncoder fatalEncoder;
 
+	private final MessageEncoder messageEncoder;
+
 	public DiscoWorker(final ReadableByteChannel readChannel, final WritableByteChannel writeChannel) {
 		this.discoIOChannel = new DiscoIOChannel(readChannel, writeChannel, new DiscoWorkerDecoder().setListener(this));
 		this.map = null;
@@ -55,6 +58,7 @@ public class DiscoWorker implements DiscoWorkerListener {
 		this.doneEncoder = new DoneEncoder();
 		this.errorEncoder = new ErrorEncoder();
 		this.fatalEncoder = new FatalEncoder();
+		this.messageEncoder = new MessageEncoder();
 	}
 
 	public void requestTask() throws IOException {
@@ -84,6 +88,10 @@ public class DiscoWorker implements DiscoWorkerListener {
 
 	public void doneReportingOutput() throws IOException {
 		discoIOChannel.write(doneEncoder);
+	}
+
+	public void reportMessage(final String msg) throws IOException {
+		discoIOChannel.write(messageEncoder.set(msg));
 	}
 
 	public void reportError(final String msg) throws IOException {

@@ -1,9 +1,8 @@
 package com.allstontrading.disco.worker;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.channels.Channels;
@@ -19,13 +18,11 @@ import com.allstontrading.disco.DiscoUtils;
  */
 public class DiscoWorkerMain {
 
-	private static final String STDOUT_LOG = "stdout";
-	private static final String STDERR_LOG = "stderr";
-	private static final String LOG = ".log";
-
 	public static void main(final String[] args) throws IOException {
 		final DiscoWorker discoWorker = new DiscoWorker(Channels.newChannel(System.in), Channels.newChannel(System.err));
-		redirectStdIOToFile();
+
+		System.setOut(new PrintStream(new DiscoMsgOutputStream(discoWorker)));
+		System.setErr(new PrintStream(new DiscoErrOutputStream(discoWorker)));
 
 		final String functionName = args[0];
 		final String reduceFunctionName = args[1];
@@ -50,7 +47,7 @@ public class DiscoWorkerMain {
 			discoWorker.doneReportingOutput();
 		}
 		catch (final Exception e) {
-			discoWorker.reportError(DiscoUtils.stacktraceToString(e));
+			discoWorker.reportFatalError(DiscoUtils.stacktraceToString(e));
 		}
 	}
 
@@ -60,10 +57,58 @@ public class DiscoWorkerMain {
 		return (T) Class.forName(clazz).getConstructor().newInstance();
 	}
 
-	public static void redirectStdIOToFile() throws FileNotFoundException {
-		final String pidString = "_pid" + DiscoUtils.getPid() + LOG;
-		System.setErr(new PrintStream(new FileOutputStream(STDERR_LOG + pidString)));
-		System.setOut(new PrintStream(new FileOutputStream(STDOUT_LOG + pidString)));
+	private static abstract class DiscoOutputStream extends OutputStream {
+
+		protected final StringBuilder stringBuilder;
+		protected final DiscoWorker discoWorker;
+
+		public DiscoOutputStream(final DiscoWorker discoWorker) {
+			super();
+			this.discoWorker = discoWorker;
+			this.stringBuilder = new StringBuilder();
+		}
+
+		@Override
+		public void write(final byte[] b, final int off, final int len) {
+			stringBuilder.append(new String(b, off, len));
+		}
+
+		@Override
+		public void write(final int b) {
+			stringBuilder.append((byte) b);
+		}
+
+		protected void clear() {
+			stringBuilder.setLength(0); // Clear
+			stringBuilder.append("[pid:");
+			stringBuilder.append(DiscoUtils.getPid());
+			stringBuilder.append("] ");
+		}
+
+	}
+
+	private static class DiscoMsgOutputStream extends DiscoOutputStream {
+		public DiscoMsgOutputStream(final DiscoWorker discoWorker) {
+			super(discoWorker);
+		}
+
+		@Override
+		public void flush() throws IOException {
+			discoWorker.reportMessage(stringBuilder.toString());
+			clear();
+		}
+	}
+
+	private static class DiscoErrOutputStream extends DiscoOutputStream {
+		public DiscoErrOutputStream(final DiscoWorker discoWorker) {
+			super(discoWorker);
+		}
+
+		@Override
+		public void flush() throws IOException {
+			discoWorker.reportError(stringBuilder.toString());
+			clear();
+		}
 	}
 
 }
