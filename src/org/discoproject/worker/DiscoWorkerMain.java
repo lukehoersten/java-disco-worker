@@ -12,7 +12,6 @@ import java.util.List;
 import org.discoproject.DiscoMapFunction;
 import org.discoproject.DiscoUtils;
 
-
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>
  * 
@@ -69,13 +68,8 @@ public class DiscoWorkerMain {
 		}
 
 		@Override
-		public void write(final byte[] b, final int off, final int len) {
-			stringBuilder.append(new String(b, off, len));
-		}
-
-		@Override
 		public void write(final int b) {
-			stringBuilder.append((byte) b);
+			stringBuilder.append(b);
 		}
 
 		protected void clear() {
