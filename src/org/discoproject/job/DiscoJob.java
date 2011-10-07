@@ -8,7 +8,6 @@ import java.text.MessageFormat;
 import org.discoproject.DiscoMapFunction;
 import org.discoproject.DiscoReduceFunction;
 
-
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>
  * 

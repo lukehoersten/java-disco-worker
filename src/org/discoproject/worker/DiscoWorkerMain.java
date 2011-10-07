@@ -12,7 +12,6 @@ import java.util.List;
 import org.discoproject.DiscoMapFunction;
 import org.discoproject.DiscoUtils;
 
-
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>
  * 
@@ -33,14 +32,14 @@ public class DiscoWorkerMain {
 			discoWorker.requestTask();
 
 			if (discoWorker.hasMapTask()) {
-				final DiscoMapFunction mapFunction = DiscoWorkerMain.<DiscoMapFunction> instansiateFunction(functionName);
+				final DiscoMapFunction mapFunction = DiscoWorkerMain.<DiscoMapFunction> instantiateFunction(functionName);
 				final List<File> outputFiles = mapFunction.map(discoWorker.getMapInput(), discoWorker.getWorkingDir(), slicedArgs);
 				discoWorker.reportOutputs(outputFiles);
 			}
 
 			// TODO: reduce phase is not supported because the dir:// URL scheme is unsupported in the input fetcher.
 			// if (discoWorker.hasReduceTask()) {
-			// final DiscoReduceFunction reduceFunction = DiscoWorkerMain.<DiscoReduceFunction> instansiateFunction(reduceFunctionName);
+			// final DiscoReduceFunction reduceFunction = DiscoWorkerMain.<DiscoReduceFunction> instantiateFunction(reduceFunctionName);
 			// final List<File> outputFile = reduceFunction.reduce(discoWorker.getReduceInputs(), slicedArgs);
 			// discoWorker.reportOutputs(outputFile);
 			// }
@@ -53,7 +52,7 @@ public class DiscoWorkerMain {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> T instansiateFunction(final String clazz) throws IllegalArgumentException, SecurityException,
+	private static <T> T instantiateFunction(final String clazz) throws IllegalArgumentException, SecurityException,
 	        InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
 		return (T) Class.forName(clazz).getConstructor().newInstance();
 	}

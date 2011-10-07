@@ -18,7 +18,6 @@ import org.discoproject.worker.protocol.decoder.types.DiscoInputReplicaProtocol;
 import org.discoproject.worker.protocol.encoder.InputErrorEncoder;
 import org.discoproject.worker.protocol.encoder.RequestInputsEncoder;
 
-
 public class DiscoTaskInputFetcher {
 
 	private static final String URL_FORMAT = "{0}://{1}:{2}/{3}?{4}#{5}";
@@ -79,6 +78,7 @@ public class DiscoTaskInputFetcher {
 
 	private void fetchInputs(final List<DiscoInput> inputs) {
 		for (final DiscoInput input : inputs) {
+			// throw new RuntimeException("" + input.getId());
 			fetchInput(input);
 		}
 	}

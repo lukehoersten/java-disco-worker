@@ -4,26 +4,25 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import org.discoproject.utils.JsonUtils;
 
 public class JsonDiscoInputReplicaDecoder {
 
 	private static final int REPLICA_ID_INDEX = 0;
 	private static final int REPLICA_LOCATION_INDEX = 1;
 
-	public static List<DiscoInputReplica> toReplicaList(final JSONArray replicaList) throws JSONException, URISyntaxException {
+	public static List<DiscoInputReplica> toReplicaList(final List<String> replicaList) throws URISyntaxException {
 		final LinkedList<DiscoInputReplica> replicas = new LinkedList<DiscoInputReplica>();
 
-		for (int i = 0; i < replicaList.length(); i++) {
-			replicas.add(toReplica(replicaList.getJSONArray(i)));
+		for (int i = 0; i < replicaList.size(); i++) {
+			replicas.add(toReplica(JsonUtils.asArray(replicaList.get(i))));
 		}
 		return replicas;
 	}
 
-	private static DiscoInputReplica toReplica(final JSONArray replicaTuple) throws JSONException, URISyntaxException {
-		final int replicaId = replicaTuple.getInt(REPLICA_ID_INDEX);
-		final String location = replicaTuple.getString(REPLICA_LOCATION_INDEX);
+	private static DiscoInputReplica toReplica(final List<String> replicaTuple) throws URISyntaxException {
+		final int replicaId = JsonUtils.asInteger(REPLICA_ID_INDEX, replicaTuple);
+		final String location = JsonUtils.asString(REPLICA_LOCATION_INDEX, replicaTuple);
 
 		return new DiscoInputReplica(replicaId, location);
 	}

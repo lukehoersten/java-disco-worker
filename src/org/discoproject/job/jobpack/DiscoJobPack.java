@@ -3,12 +3,13 @@ package org.discoproject.job.jobpack;
 import java.io.File;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.discoproject.utils.JsonUtils;
 import org.discoproject.worker.protocol.decoder.types.DiscoInputReplica;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>
@@ -28,31 +29,37 @@ public class DiscoJobPack {
 	private static final String SCHEDULER_KEY = "scheduler";
 	private static final String OWNER_KEY = "owner";
 
-	private final JSONObject jobDict;
-	private final JSONObject jobEnvs;
+	private final Map<String, Object> jobDict;
+	private final Map<String, Object> jobEnvs;
+
 	private final File jobHome;
 	private final byte[] jobData;
 
+	/**
+	 * Instantiates a new disco job pack.
+	 * 
+	 * @param jobName the job name
+	 * @param worker the worker
+	 * @param hasMapPhase the has map phase
+	 * @param hasReducePhase the has reduce phase
+	 * @param jobHome the job home
+	 * @param jobData the job data
+	 */
 	public DiscoJobPack(final String jobName, final File worker, final boolean hasMapPhase, final boolean hasReducePhase,
 	        final File jobHome, final byte[] jobData) {
-		this.jobDict = new JSONObject();
-		this.jobEnvs = new JSONObject();
+		this.jobDict = new LinkedHashMap<String, Object>();
+		this.jobEnvs = new LinkedHashMap<String, Object>();
 		this.jobHome = jobHome;
 		this.jobData = jobData;
 
-		try {
-			this.jobDict.put(INPUT_KEY, new JSONArray());
-			this.jobDict.put(WORKER_KEY, worker.getName());
-			this.jobDict.put(HAS_MAP_KEY, hasMapPhase);
-			this.jobDict.put(HAS_REDUCE_KEY, hasReducePhase);
-			this.jobDict.put(NUM_REDUCES_KEY, 1);
-			this.jobDict.put(PREFIX_KEY, jobName);
-			this.jobDict.put(SCHEDULER_KEY, DiscoScheduler.max_cores.toString());
-			this.jobDict.put(OWNER_KEY, System.getProperty("user.name"));
-		}
-		catch (final JSONException e) {
-			throw new RuntimeException(e);
-		}
+		this.jobDict.put(INPUT_KEY, new ArrayList<Object>());
+		this.jobDict.put(WORKER_KEY, worker.getName());
+		this.jobDict.put(HAS_MAP_KEY, hasMapPhase);
+		this.jobDict.put(HAS_REDUCE_KEY, hasReducePhase);
+		this.jobDict.put(NUM_REDUCES_KEY, 1);
+		this.jobDict.put(PREFIX_KEY, jobName);
+		this.jobDict.put(SCHEDULER_KEY, DiscoScheduler.max_cores.toString());
+		this.jobDict.put(OWNER_KEY, System.getProperty("user.name"));
 	}
 
 	/**
@@ -60,34 +67,33 @@ public class DiscoJobPack {
 	 * 
 	 * @param input
 	 */
+	@SuppressWarnings("unchecked")
 	public void addInput(final URI input) {
-		try {
-			jobDict.append(INPUT_KEY, input);
-		}
-		catch (final JSONException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void addEnvVar(final String key, final String value) {
-		try {
-			jobEnvs.put(key, value);
-		}
-		catch (final JSONException e) {
-			throw new RuntimeException(e);
-		}
+		((List<Object>) jobDict.get(INPUT_KEY)).add(input.toASCIIString());
 	}
 
 	/**
-	 * @param buffer
+	 * Adds an env var.
+	 * 
+	 * @param key the key
+	 * @param value the value
+	 */
+	public void addEnvVar(final String key, final String value) {
+		jobEnvs.put(key, value);
+	}
+
+	/**
+	 * Write the job pack to a buffer
+	 * 
+	 * @param buffer the buffer
 	 * @return number of bytes written to buffer
 	 */
 	public int write(final ByteBuffer buffer) {
-		final byte[] jobDictBytes = jobDict.toString().getBytes();
-		final byte[] jobEnvsBytes = jobEnvs.toString().getBytes();
+		final byte[] jobDictBytes = JsonUtils.toJsonString(jobDict).getBytes();
+		final byte[] jobEnvsBytes = JsonUtils.toJsonString(jobEnvs).getBytes();
 		final byte[] jobHomeBytes = DiscoJobPackUtils.getJobHomeZip(jobHome);
 
-		final int jobDictOffset = Integer.SIZE;
+		final int jobDictOffset = HEADER_SIZE;
 		final int jobEnvsOffset = jobDictOffset + jobDictBytes.length;
 		final int jobHomeOffset = jobEnvsOffset + jobEnvsBytes.length;
 		final int jobDataOffset = jobHomeOffset + jobHomeBytes.length;
@@ -99,7 +105,7 @@ public class DiscoJobPack {
 		}
 
 		buffer.putInt(MAGIC_NUM);
-		buffer.putInt(jobDataOffset);
+		buffer.putInt(jobDictOffset);
 		buffer.putInt(jobEnvsOffset);
 		buffer.putInt(jobHomeOffset);
 		buffer.putInt(jobDataOffset);

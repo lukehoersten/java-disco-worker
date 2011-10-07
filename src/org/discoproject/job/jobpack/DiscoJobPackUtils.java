@@ -14,6 +14,9 @@ import java.util.zip.ZipOutputStream;
 public class DiscoJobPackUtils {
 
 	public static byte[] getJobHomeZip(final File jobHome) {
+		if (!jobHome.isDirectory()) {
+			return new byte[0];
+		}
 		File tmpZipFile;
 		try {
 			tmpZipFile = File.createTempFile("tmpjobhome", "zip");

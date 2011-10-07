@@ -8,6 +8,7 @@ import org.discoproject.worker.protocol.encoder.types.RequestMessageName;
  */
 public abstract class AbstractDiscoWorkerEncoder {
 
+	protected static final String QUOTE = "\"";
 	private static final char SPACE = ' ';
 	private static final char NEWLINE = '\n';
 
