@@ -65,14 +65,6 @@ Hacking
 
 ### Build Dependencies
 
-#### Runtime
-
-* [JSON-Java](https://github.com/douglascrockford/JSON-java) -
-  Unfortunately no Jar is produced for this dependency so I may end up
-  including one in the BitBucket downloads second.
-
-#### Test
-
 * [Mockito](http://code.google.com/p/mockito/) Test framework.
 * [JUnit](http://www.junit.org/)
 
