@@ -67,7 +67,7 @@ public class DiscoUtils {
 	 */
 	public static String[] encodeRaw(final String[] inputStrings) {
 		for (int i = 0; i < inputStrings.length; i++) {
-			inputStrings[i] = DiscoUtils.encodeRaw(inputStrings[i]);
+			inputStrings[i] = encodeRaw(inputStrings[i]);
 		}
 		return inputStrings;
 	}
