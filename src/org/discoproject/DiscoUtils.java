@@ -77,6 +77,10 @@ public class DiscoUtils {
 		        + removeNewlines((new BASE64Encoder()).encode(str.getBytes()));
 	}
 
+	public static String decodeRaw(final String str) throws IOException {
+		return new String(new BASE64Decoder().decodeBuffer(str));
+	}
+
 	public static String decodeRaw(final ReadableByteChannel channel) throws IOException {
 		return new String(new BASE64Decoder().decodeBuffer(Channels.newInputStream(channel)));
 	}

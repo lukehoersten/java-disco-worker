@@ -29,7 +29,6 @@
 	<target name="libs">
 		<!-- Dependencies -->
 		<fileset dir="${lib.dir}" id="lib.jars">
-			<include name="${json.jar}" />
 		</fileset>
 
 		<!-- Test Dependencies -->

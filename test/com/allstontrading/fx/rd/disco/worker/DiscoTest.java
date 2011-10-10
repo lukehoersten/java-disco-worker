@@ -26,7 +26,6 @@ import org.discoproject.worker.protocol.encoder.WorkerAnnounceEncoder;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>
  * 
@@ -119,10 +118,18 @@ public class DiscoTest {
 	@Test
 	public void testB64Encoding() {
 		final String json = "{\"entryexitlevel\":[\"DEC\",1.5],\"qr2\":[\"DEC\",1],\"qr1\":[\"DEC\",1.0E-5],\"enterexitwindow\":[\"STR\",\"'2 hours'\"],\"VarientNumber\":1}";
-		final String expected = "eyJlbnRyeWV4aXRsZXZlbCI6WyJERUMiLDEuNV0sInFyMiI6WyJERUMiLDFdLCJxcjEiOlsiREVDIiwxLjBFLTVdLCJlbnRlcmV4aXR3aW5kb3ciOlsiU1RSIiwiJzIgaG91cnMnIl0sIlZhcmllbnROdW1iZXIiOjF9";
+		final String expected = "raw://eyJlbnRyeWV4aXRsZXZlbCI6WyJERUMiLDEuNV0sInFyMiI6WyJERUMiLDFdLCJxcjEiOlsiREVDIiwxLjBFLTVdLCJlbnRlcmV4aXR3aW5kb3ciOlsiU1RSIiwiJzIgaG91cnMnIl0sIlZhcmllbnROdW1iZXIiOjF9";
 
 		final String actual = DiscoUtils.encodeRaw(json);
+		assertEquals(expected, actual);
+	}
 
+	@Test
+	public void testB64Decoding() throws IOException {
+		final String raw = "eyJlbnRyeWV4aXRsZXZlbCI6WyJERUMiLDEuNV0sInFyMiI6WyJERUMiLDFdLCJxcjEiOlsiREVDIiwxLjBFLTVdLCJlbnRlcmV4aXR3aW5kb3ciOlsiU1RSIiwiJzIgaG91cnMnIl0sIlZhcmllbnROdW1iZXIiOjF9";
+		final String expected = "{\"entryexitlevel\":[\"DEC\",1.5],\"qr2\":[\"DEC\",1],\"qr1\":[\"DEC\",1.0E-5],\"enterexitwindow\":[\"STR\",\"'2 hours'\"],\"VarientNumber\":1}";
+
+		final String actual = DiscoUtils.decodeRaw(raw);
 		assertEquals(expected, actual);
 	}
 
