@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
+import org.discoproject.worker.protocol.decoder.types.DiscoInputReplicaProtocol;
+
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -28,8 +30,7 @@ public class DiscoUtils {
 		final StringWriter stringWriter = new StringWriter();
 		final PrintWriter printWriter = new PrintWriter(stringWriter);
 		e.printStackTrace(printWriter);
-		final String str = stringWriter.toString();
-		return str;
+		return stringWriter.toString();
 	}
 
 	/**
@@ -58,8 +59,22 @@ public class DiscoUtils {
 		return sb.toString();
 	}
 
+	/**
+	 * Destructively prepend URL scheme to input strings
+	 * 
+	 * @param inputStrings
+	 * @return inputStrings
+	 */
+	public static String[] encodeRaw(final String[] inputStrings) {
+		for (int i = 0; i < inputStrings.length; i++) {
+			inputStrings[i] = DiscoUtils.encodeRaw(inputStrings[i]);
+		}
+		return inputStrings;
+	}
+
 	public static String encodeRaw(final String str) {
-		return removeNewlines((new BASE64Encoder()).encode(str.getBytes()));
+		return DiscoInputReplicaProtocol.raw + DiscoInputReplicaProtocol.URL_SCHEME
+		        + removeNewlines((new BASE64Encoder()).encode(str.getBytes()));
 	}
 
 	public static String decodeRaw(final ReadableByteChannel channel) throws IOException {
