@@ -1,4 +1,4 @@
-package com.allstontrading.fx.rd.disco.worker;
+package org.discoproject.test;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
