@@ -12,7 +12,6 @@ import java.util.List;
 import org.discoproject.DiscoMapFunction;
 import org.discoproject.DiscoUtils;
 
-
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>
  * 
@@ -34,14 +33,16 @@ public class DiscoWorkerMain {
 
 			if (discoWorker.hasMapTask()) {
 				final DiscoMapFunction mapFunction = DiscoWorkerMain.<DiscoMapFunction> instantiateFunction(functionName);
-				final List<File> outputFiles = mapFunction.map(discoWorker.getMapInput(), discoWorker.getWorkingDir(), slicedArgs);
+				final List<File> outputFiles = mapFunction.map(discoWorker.getMapInput(), discoWorker.getJobName(),
+				        discoWorker.getWorkingDir(), slicedArgs);
 				discoWorker.reportOutputs(outputFiles);
 			}
 
 			// TODO: reduce phase is not supported because the dir:// URL scheme is unsupported in the input fetcher.
 			// if (discoWorker.hasReduceTask()) {
 			// final DiscoReduceFunction reduceFunction = DiscoWorkerMain.<DiscoReduceFunction> instantiateFunction(reduceFunctionName);
-			// final List<File> outputFile = reduceFunction.reduce(discoWorker.getReduceInputs(), slicedArgs);
+			// final List<File> outputFile = reduceFunction.reduce(discoWorker.getReduceInputs(), discoWorker.getJobName(),
+			// discoWorker.getWorkingDir(), slicedArgs);
 			// discoWorker.reportOutputs(outputFile);
 			// }
 

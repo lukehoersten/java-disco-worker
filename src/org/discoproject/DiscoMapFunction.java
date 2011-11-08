@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface DiscoMapFunction {
 
-	List<File> map(ReadableByteChannel input, File workingDir, final String[] args);
+	List<File> map(ReadableByteChannel input, String jobName, File workingDir, String[] args);
 
 }

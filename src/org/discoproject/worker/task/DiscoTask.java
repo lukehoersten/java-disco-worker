@@ -8,7 +8,6 @@ import org.discoproject.worker.protocol.DiscoIOChannel;
 import org.discoproject.worker.protocol.decoder.types.DiscoInput;
 import org.discoproject.worker.protocol.decoder.types.DiscoInputReplica;
 
-
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>
  * 
@@ -17,11 +16,13 @@ public abstract class DiscoTask {
 
 	private static final int HEX = 16;
 
+	private final String jobName;
 	private final int taskId;
 	private final File workingDir;
 	private final DiscoTaskInputFetcher inputFetcher;
 
-	public DiscoTask(final DiscoIOChannel discoIOChannel, final int taskId, final int discoPort) {
+	public DiscoTask(final DiscoIOChannel discoIOChannel, final String jobName, final int taskId, final int discoPort) {
+		this.jobName = jobName;
 		this.taskId = taskId;
 		this.inputFetcher = new DiscoTaskInputFetcher(discoIOChannel, discoPort);
 
@@ -36,6 +37,10 @@ public abstract class DiscoTask {
 	private String getWorkingDirName() {
 		final String timehash = Long.toString(System.currentTimeMillis(), HEX);
 		return taskId + "_" + getTaskTypeName() + "_pid" + DiscoUtils.getPid() + "_time" + timehash;
+	}
+
+	public String getJobName() {
+		return jobName;
 	}
 
 	protected abstract String getTaskTypeName();

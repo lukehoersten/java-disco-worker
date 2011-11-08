@@ -25,7 +25,6 @@ import org.discoproject.worker.task.DiscoMapTask;
 import org.discoproject.worker.task.DiscoReduceTask;
 import org.discoproject.worker.task.DiscoTask;
 
-
 /**
  * @author Luke Hoersten <lhoersten@allstontrading.com>
  * 
@@ -122,10 +121,10 @@ public class DiscoWorker implements DiscoWorkerListener {
 		// TODO use all these other task arguments to optimize input fetching.
 		switch (taskMode) {
 			case map:
-				map = new DiscoMapTask(discoIOChannel, taskId, discoPort);
+				map = new DiscoMapTask(discoIOChannel, jobName, taskId, discoPort);
 				break;
 			case reduce:
-				reduce = new DiscoReduceTask(discoIOChannel, taskId, discoPort);
+				reduce = new DiscoReduceTask(discoIOChannel, jobName, taskId, discoPort);
 				break;
 		}
 	}
@@ -163,6 +162,10 @@ public class DiscoWorker implements DiscoWorkerListener {
 
 	private boolean hasTask() {
 		return hasMapTask() || hasReduceTask();
+	}
+
+	public String getJobName() {
+		return getTask().getJobName();
 	}
 
 }

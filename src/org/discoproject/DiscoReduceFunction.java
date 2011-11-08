@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface DiscoReduceFunction {
 
-	List<File> reduce(List<ReadableByteChannel> inputs, File workingDir, final String[] args);
+	List<File> reduce(List<ReadableByteChannel> inputs, String jobName, File workingDir, String[] args);
 
 }
